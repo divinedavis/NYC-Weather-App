@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { CITIES, getCity } from '@/lib/cities'
 import { getWeather, windDirection, capitalize } from '@/lib/weather'
+import { Temp, WindSpeed } from '@/components/Temp'
 import type { Metadata } from 'next'
 
 export const revalidate = 600
@@ -73,9 +74,9 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
           <>
             <div className="bg-white/10 backdrop-blur rounded-3xl p-8 text-center mb-6">
               <img src={`https://openweathermap.org/img/wn/${w.icon}@4x.png`} alt={w.description} width={100} height={100} className="mx-auto" />
-              <p className="text-8xl font-light text-white mb-2">{w.temp}°F</p>
+              <p className="text-8xl font-light text-white mb-2"><Temp value={w.temp} /></p>
               <p className="text-2xl text-blue-200 capitalize mb-1">{capitalize(w.description)}</p>
-              <p className="text-blue-300">Feels like {w.feels_like}°F · H {w.temp_max}° / L {w.temp_min}°</p>
+              <p className="text-blue-300">Feels like <Temp value={w.feels_like} /> · H <Temp value={w.temp_max} /> / L <Temp value={w.temp_min} /></p>
             </div>
             <div className="grid grid-cols-3 gap-4 mb-8">
               <div className="bg-white/10 backdrop-blur rounded-2xl p-5">
@@ -84,7 +85,7 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
               </div>
               <div className="bg-white/10 backdrop-blur rounded-2xl p-5">
                 <p className="text-blue-300 text-sm mb-1">Wind</p>
-                <p className="text-white text-3xl font-light">{w.wind_speed} mph</p>
+                <p className="text-white text-3xl font-light"><WindSpeed mph={w.wind_speed} /></p>
                 <p className="text-blue-300 text-sm">{windDirection(w.wind_deg)}</p>
               </div>
               <div className="bg-white/10 backdrop-blur rounded-2xl p-5">

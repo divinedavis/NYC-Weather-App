@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { CITIES, getCity, getDistrict } from '@/lib/cities'
 import { getWeather, getForecast, windDirection, capitalize } from '@/lib/weather'
+import { Temp, WindSpeed } from '@/components/Temp'
 import type { Metadata } from 'next'
 
 export const revalidate = 600
@@ -96,9 +97,9 @@ export default async function DistrictPage({
           <>
             <div className="bg-white/10 backdrop-blur rounded-3xl p-8 text-center mb-6">
               <img src={`https://openweathermap.org/img/wn/${w.icon}@4x.png`} alt={w.description} width={100} height={100} className="mx-auto" />
-              <p className="text-8xl font-light text-white mb-2">{w.temp}°F</p>
+              <p className="text-8xl font-light text-white mb-2"><Temp value={w.temp} /></p>
               <p className="text-2xl text-blue-200 capitalize mb-1">{capitalize(w.description)}</p>
-              <p className="text-blue-300">Feels like {w.feels_like}°F · H {w.temp_max}° / L {w.temp_min}°</p>
+              <p className="text-blue-300">Feels like <Temp value={w.feels_like} /> · H <Temp value={w.temp_max} /> / L <Temp value={w.temp_min} /></p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -108,7 +109,7 @@ export default async function DistrictPage({
               </div>
               <div className="bg-white/10 backdrop-blur rounded-2xl p-5">
                 <p className="text-blue-300 text-sm mb-1">Wind</p>
-                <p className="text-white text-3xl font-light">{w.wind_speed} mph</p>
+                <p className="text-white text-3xl font-light"><WindSpeed mph={w.wind_speed} /></p>
                 <p className="text-blue-300 text-sm">{windDirection(w.wind_deg)}</p>
               </div>
             </div>
@@ -132,9 +133,9 @@ export default async function DistrictPage({
             <section className="bg-white/5 rounded-2xl p-6 text-blue-200 text-sm leading-relaxed mb-6">
               <h2 className="text-white font-semibold mb-2">{district.name} Weather Right Now</h2>
               <p>
-                {district.name} weather today is {w.temp}°F with {w.description}. The high will reach {w.temp_max}°F
-                and the low will drop to {w.temp_min}°F. It feels like {w.feels_like}°F outside.
-                Humidity is at {w.humidity}% with winds from the {windDirection(w.wind_deg)} at {w.wind_speed} mph.
+                {district.name} weather today is <Temp value={w.temp} /> with {w.description}. The high will reach <Temp value={w.temp_max} />
+                {' '}and the low will drop to <Temp value={w.temp_min} />. It feels like <Temp value={w.feels_like} /> outside.
+                Humidity is at {w.humidity}% with winds from the {windDirection(w.wind_deg)} at <WindSpeed mph={w.wind_speed} />.
                 Visibility is {w.visibility} miles with {w.clouds}% cloud cover and a pressure of {w.pressure} hPa.
               </p>
             </section>
@@ -147,8 +148,8 @@ export default async function DistrictPage({
                     <div key={day.date} className="bg-white/10 backdrop-blur rounded-2xl p-3 text-center">
                       <p className="text-blue-300 text-xs mb-2">{day.date}</p>
                       <img src={`https://openweathermap.org/img/wn/${day.icon}@2x.png`} alt={day.description} width={40} height={40} className="mx-auto" />
-                      <p className="text-white text-sm font-medium">{day.high}°</p>
-                      <p className="text-blue-300 text-sm">{day.low}°</p>
+                      <p className="text-white text-sm font-medium"><Temp value={day.high} /></p>
+                      <p className="text-blue-300 text-sm"><Temp value={day.low} /></p>
                       <p className="text-blue-200 text-xs mt-1 capitalize leading-tight">{capitalize(day.description)}</p>
                     </div>
                   ))}

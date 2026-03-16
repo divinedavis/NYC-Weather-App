@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { headers } from 'next/headers'
 import { CITIES } from '@/lib/cities'
 import { getWeather, capitalize } from '@/lib/weather'
+import { Temp } from '@/components/Temp'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -124,10 +125,10 @@ export default async function Home() {
               </div>
               {w ? (
                 <>
-                  <p className="text-5xl font-light text-white mb-1">{w.temp}°F</p>
+                  <p className="text-5xl font-light text-white mb-1"><Temp value={w.temp} /></p>
                   <p className="text-blue-200 capitalize text-sm">{capitalize(w.description)}</p>
                   <p className="text-blue-300 text-xs mt-1">
-                    Feels like {w.feels_like}°F · H {w.temp_max}° / L {w.temp_min}°
+                    Feels like <Temp value={w.feels_like} /> · H <Temp value={w.temp_max} /> / L <Temp value={w.temp_min} />
                   </p>
                 </>
               ) : (

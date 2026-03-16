@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
+import { UnitsProvider } from '@/app/providers'
+import { UnitToggle } from '@/components/UnitToggle'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -39,7 +41,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}
         </Script>
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <UnitsProvider>
+          <div className="fixed top-3 right-4 z-50">
+            <UnitToggle />
+          </div>
+          {children}
+        </UnitsProvider>
+      </body>
     </html>
   )
 }
