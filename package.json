@@ -1,5 +1,5 @@
 {
-  "name": "nycweather",
+  "name": "city-weather-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
