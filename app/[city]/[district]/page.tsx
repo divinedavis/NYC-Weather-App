@@ -22,12 +22,12 @@ export async function generateMetadata({
   const district = getDistrict(citySlug, districtSlug)
   if (!city || !district) return {}
   return {
-    title: `${district.name} Weather Today | ${city.name}, ${city.country}`,
-    description: `Current weather in ${district.name}, ${city.name}. Real-time temperature, humidity, wind, and 5-day forecast.`,
+    title: `${district.name} Weather Today | ${city.name} Neighborhood Weather`,
+    description: `${district.name} weather right now: current temperature, conditions, and 5-day forecast for ${district.name} in ${city.name}, ${city.country}. Updated every 10 minutes.`,
     alternates: { canonical: `https://cityweather.app/${city.slug}/${district.slug}` },
     openGraph: {
-      title: `${district.name} Weather Today — ${city.name}`,
-      description: `Real-time weather for ${district.name}, ${city.name}, ${city.country}`,
+      title: `${district.name} Weather Today & Right Now | ${city.name}`,
+      description: `Real-time hyperlocal weather for ${district.name}, ${city.name}. Current conditions updated every 10 minutes.`,
       url: `https://cityweather.app/${city.slug}/${district.slug}`,
     },
   }
@@ -84,7 +84,7 @@ export default async function DistrictPage({
         </div>
 
         <header className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-white mb-1">{district.name} Weather</h1>
+          <h1 className="text-4xl font-bold text-white mb-1">{district.name} Weather Today</h1>
           <p className="text-blue-300 text-sm">{city.name}, {city.country} · Updated {updated} ET</p>
         </header>
 
@@ -130,7 +130,7 @@ export default async function DistrictPage({
             </div>
 
             <section className="bg-white/5 rounded-2xl p-6 text-blue-200 text-sm leading-relaxed mb-6">
-              <h2 className="text-white font-semibold mb-2">{district.name} Weather Summary</h2>
+              <h2 className="text-white font-semibold mb-2">{district.name} Weather Right Now</h2>
               <p>
                 {district.name} weather today is {w.temp}°F with {w.description}. The high will reach {w.temp_max}°F
                 and the low will drop to {w.temp_min}°F. It feels like {w.feels_like}°F outside.
