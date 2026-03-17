@@ -1,3 +1,5 @@
+import { readFileSync, writeFileSync, mkdirSync } from 'fs'
+
 export const BOROUGHS = [
   { name: 'Manhattan',     slug: 'manhattan',     lat: 40.7831, lon: -73.9712 },
   { name: 'Brooklyn',      slug: 'brooklyn',      lat: 40.6782, lon: -73.9442 },
@@ -31,14 +33,48 @@ export type ForecastDay = {
   icon: string
 }
 
+const CACHE_DIR = '/var/cache/cityweather'
+const WEATHER_TTL = 600    // 10 minutes
+const FORECAST_TTL = 3600  // 1 hour
+
+function cacheKey(prefix: string, lat: number, lon: number): string {
+  return `${prefix}_${lat.toFixed(4)}_${lon.toFixed(4)}`
+}
+
+function cacheGet<T>(key: string, ttl: number): T | null {
+  try {
+    const raw = readFileSync(`${CACHE_DIR}/${key}.json`, 'utf-8')
+    const { data, ts } = JSON.parse(raw)
+    if (Date.now() - ts < ttl * 1000) return data as T
+    return null
+  } catch {
+    return null
+  }
+}
+
+function cacheSet(key: string, data: unknown): void {
+  try {
+    mkdirSync(CACHE_DIR, { recursive: true })
+    writeFileSync(`${CACHE_DIR}/${key}.json`, JSON.stringify({ data, ts: Date.now() }))
+  } catch {
+    // Non-fatal: cache write failure just means next request hits API
+  }
+}
+
 export async function getWeather(lat: number, lon: number): Promise<WeatherData | null> {
   const apiKey = process.env.OPENWEATHER_API_KEY
   if (!apiKey || apiKey === 'your_api_key_here') return null
+
+  const key = cacheKey('weather', lat, lon)
+  const cached = cacheGet<WeatherData>(key, WEATHER_TTL)
+  if (cached) return cached
+
   const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`
   const res = await fetch(url, { next: { revalidate: 600 } })
   if (!res.ok) return null
   const data = await res.json()
-  return {
+
+  const result: WeatherData = {
     borough: '',
     slug: '',
     temp: Math.round(data.main.temp),
@@ -54,11 +90,19 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherData 
     pressure: data.main.pressure,
     clouds: data.clouds?.all ?? 0,
   }
+
+  cacheSet(key, result)
+  return result
 }
 
 export async function getForecast(lat: number, lon: number): Promise<ForecastDay[]> {
   const apiKey = process.env.OPENWEATHER_API_KEY
   if (!apiKey || apiKey === 'your_api_key_here') return []
+
+  const key = cacheKey('forecast', lat, lon)
+  const cached = cacheGet<ForecastDay[]>(key, FORECAST_TTL)
+  if (cached) return cached
+
   const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`
   const res = await fetch(url, { next: { revalidate: 3600 } })
   if (!res.ok) return []
@@ -87,13 +131,16 @@ export async function getForecast(lat: number, lon: number): Promise<ForecastDay
     day.icons.push(item.weather[0].icon)
   }
 
-  return Array.from(days.values()).slice(0, 5).map((d) => ({
+  const result = Array.from(days.values()).slice(0, 5).map((d) => ({
     date: d.label,
     high: Math.max(...d.highs),
     low: Math.min(...d.lows),
     description: d.descriptions[Math.floor(d.descriptions.length / 2)],
     icon: d.icons[Math.floor(d.icons.length / 2)],
   }))
+
+  cacheSet(key, result)
+  return result
 }
 
 export async function getAllBoroughWeather(): Promise<WeatherData[]> {
