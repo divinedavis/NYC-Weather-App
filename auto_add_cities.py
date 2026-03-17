@@ -20,7 +20,7 @@ APP_DIR       = Path("/var/www/nycweather")
 CITIES_TS     = APP_DIR / "lib" / "cities.ts"
 QUEUE_FILE    = APP_DIR / "city_queue.json"
 LOG_FILE      = APP_DIR / "auto_add_cities.log"
-BATCH_SIZE    = 10
+BATCH_SIZE    = 30
 MODEL         = "claude-opus-4-6"
 
 # ── Logging ───────────────────────────────────────────────────────────────────

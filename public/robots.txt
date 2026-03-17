@@ -16,4 +16,4 @@ Allow: /
 User-agent: Googlebot
 Allow: /
 
-Sitemap: https://nycweather.app/sitemap.xml
+Sitemap: https://cityweather.app/sitemap.xml
