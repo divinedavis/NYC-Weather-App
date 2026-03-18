@@ -1,0 +1,22 @@
+{
+  "name": "City Weather",
+  "short_name": "CityWeather",
+  "description": "Real-time hyperlocal weather for neighborhoods in top cities worldwide",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f2027",
+  "theme_color": "#1e3a5f",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" }
+  ],
+  "categories": ["weather", "travel", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "/opengraph-image",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "label": "City Weather homepage showing global neighborhood weather"
+    }
+  ]
+}

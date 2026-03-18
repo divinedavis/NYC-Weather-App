@@ -31,6 +31,11 @@ export async function generateMetadata({
       description: `Real-time hyperlocal weather for ${district.name}, ${city.name}. Current conditions updated every 10 minutes.`,
       url: `https://cityweather.app/${city.slug}/${district.slug}`,
     },
+    other: {
+      'geo.placename': `${district.name}, ${city.name}, ${city.country}`,
+      'geo.position': `${district.lat};${district.lon}`,
+      'ICBM': `${district.lat}, ${district.lon}`,
+    },
   }
 }
 
@@ -72,9 +77,60 @@ export default async function DistrictPage({
     },
   }
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'City Weather', item: 'https://cityweather.app/' },
+      { '@type': 'ListItem', position: 2, name: `${city.name} Weather`, item: `https://cityweather.app/${city.slug}` },
+      { '@type': 'ListItem', position: 3, name: `${district.name} Weather`, item: `https://cityweather.app/${city.slug}/${district.slug}` },
+    ],
+  }
+
+  const faqSchema = w ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `What is the weather in ${district.name} today?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${district.name} weather today is ${w.temp}°F (${Math.round((w.temp - 32) * 5 / 9)}°C) with ${w.description}. The high is ${w.temp_max}°F and the low is ${w.temp_min}°F. It feels like ${w.feels_like}°F outside.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `What is the humidity in ${district.name} right now?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Humidity in ${district.name} is currently ${w.humidity}%. Wind is coming from the ${windDirection(w.wind_deg)} at ${w.wind_speed} mph. Visibility is ${w.visibility} miles.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `Will it rain in ${district.name} today?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Current conditions in ${district.name} show ${capitalize(w.description)} with ${w.clouds}% cloud cover. Check the 5-day forecast on this page for upcoming precipitation.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `How does the weather in ${district.name} compare to the rest of ${city.name}?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${district.description ?? `${district.name} is one of ${city.name}'s distinct neighborhoods, each with its own microclimate influenced by local geography, proximity to water, and urban density.`}`,
+        },
+      },
+    ],
+  } : null
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
       <main className="max-w-2xl mx-auto px-4 py-12">
         <div className="flex gap-3 text-sm text-blue-300 mb-8">
           <Link href="/" className="hover:text-white transition">Cities</Link>
@@ -188,6 +244,17 @@ export default async function DistrictPage({
             ← All {city.name} Neighborhoods
           </Link>
         </div>
+
+        <nav className="mt-10 text-center">
+          <p className="text-blue-300 text-sm mb-3">More Cities</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {CITIES.filter((c) => c.slug !== citySlug).slice(0, 8).map((c) => (
+              <Link key={c.slug} href={`/${c.slug}`} className="text-blue-200 hover:text-white text-xs px-3 py-1 bg-white/10 rounded-full hover:bg-white/20 transition">
+                {c.flag} {c.name}
+              </Link>
+            ))}
+          </div>
+        </nav>
       </main>
     </>
   )

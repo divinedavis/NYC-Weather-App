@@ -24,6 +24,11 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
       description: `Real-time hyperlocal weather for every neighborhood in ${city.name}. Updated every 10 minutes.`,
       url: `https://cityweather.app/${city.slug}`,
     },
+    other: {
+      'geo.placename': `${city.name}, ${city.country}`,
+      'geo.position': `${city.lat};${city.lon}`,
+      'ICBM': `${city.lat}, ${city.lon}`,
+    },
   }
 }
 
@@ -35,7 +40,6 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
   const w = await getWeather(city.lat, city.lon)
   const updated = new Date().toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'full', timeStyle: 'short' })
 
-  // Group districts by their group label
   const groups = city.districts.reduce<Record<string, typeof city.districts>>((acc, d) => {
     const key = d.group ?? 'Neighborhoods'
     if (!acc[key]) acc[key] = []
@@ -56,9 +60,53 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
     },
   }
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'City Weather', item: 'https://cityweather.app/' },
+      { '@type': 'ListItem', position: 2, name: `${city.name} Weather`, item: `https://cityweather.app/${city.slug}` },
+    ],
+  }
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `What is the weather in ${city.name} today?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: w
+            ? `${city.name} weather today is ${w.temp}°F (${Math.round((w.temp - 32) * 5 / 9)}°C) with ${w.description}. The high is ${w.temp_max}°F and the low is ${w.temp_min}°F. It feels like ${w.feels_like}°F outside with ${w.humidity}% humidity.`
+            : `Check the current conditions for each neighborhood in ${city.name} on this page, updated every 10 minutes.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `Which neighborhood in ${city.name} has the best weather?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `${city.description} Browse individual neighborhood pages to compare current conditions across ${city.name}.`,
+        },
+      },
+      {
+        '@type': 'Question',
+        name: `How often is the ${city.name} weather updated?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `Weather data for all ${city.name} neighborhoods is updated every 10 minutes using OpenWeatherMap data with precise lat/lon coordinates for each district.`,
+        },
+      },
+    ],
+  }
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <main className="max-w-3xl mx-auto px-4 py-12">
         <Link href="/" className="text-blue-300 hover:text-white text-sm mb-8 inline-block transition">
           ← All Cities

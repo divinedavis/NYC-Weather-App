@@ -1,19 +1,29 @@
 User-agent: *
 Allow: /
+Disallow: /widget/
 
 User-agent: GPTBot
 Allow: /
+Disallow: /widget/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /widget/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /widget/
 
 User-agent: anthropic-ai
 Allow: /
+Disallow: /widget/
 
 User-agent: Googlebot
 Allow: /
+Disallow: /widget/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /widget/
 
 Sitemap: https://cityweather.app/sitemap.xml
