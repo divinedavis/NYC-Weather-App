@@ -4,6 +4,8 @@ import Script from 'next/script'
 import { UnitsProvider } from '@/app/providers'
 import { UnitToggle } from '@/components/UnitToggle'
 import { PWAInstall } from '@/components/PWAInstall'
+import { LocationPrompt } from '@/components/LocationPrompt'
+import { CITIES } from '@/lib/cities'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -67,6 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
           {children}
           <PWAInstall />
+          <LocationPrompt cities={CITIES.map(c => ({ name: c.name, slug: c.slug, lat: c.lat, lon: c.lon, districts: c.districts.map(d => ({ name: d.name, slug: d.slug, lat: d.lat, lon: d.lon })) }))} />
         </UnitsProvider>
       </body>
     </html>
