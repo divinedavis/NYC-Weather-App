@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import { UnitsProvider } from '@/app/providers'
 import { UnitToggle } from '@/components/UnitToggle'
+import { PWAInstall } from '@/components/PWAInstall'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -10,8 +11,8 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   metadataBase: new URL('https://cityweather.app'),
   title: 'City Weather | Neighborhood Weather for Top Cities Worldwide',
-  description: 'Real-time hyperlocal weather for neighborhoods in New York City, London, Tokyo, Paris, Dubai, Sydney, and 30+ more cities worldwide. Updated every 10 minutes.',
-  keywords: 'city weather, neighborhood weather, nyc weather, london weather, tokyo weather, paris weather, dubai weather, sydney weather, hyperlocal weather, weather near me',
+  description: 'Real-time hyperlocal weather for neighborhoods in New York City, London, Tokyo, Paris, Dubai, Sydney, and 57+ more cities worldwide. Updated every 10 minutes.',
+  keywords: 'city weather, neighborhood weather, nyc weather, london weather, tokyo weather, paris weather, dubai weather, sydney weather, san francisco weather, seattle weather, boston weather, hyperlocal weather, weather near me, weather by neighborhood',
   manifest: '/manifest.json',
   openGraph: {
     title: 'City Weather — Hyperlocal Weather Worldwide',
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <UnitToggle />
           </div>
           {children}
+          <PWAInstall />
         </UnitsProvider>
       </body>
     </html>
