@@ -31,7 +31,7 @@ async function getNearestCitySlug(ip: string): Promise<string> {
   if (isPrivateIp) return CITIES[0].slug
 
   try {
-    const res = await fetch(`https://ip-api.com/json/${ip}?fields=lat,lon,status`, {
+    const res = await fetch(`http://ip-api.com/json/${ip}?fields=lat,lon,status`, {
       next: { revalidate: 3600 },
     })
     if (!res.ok) return CITIES[0].slug

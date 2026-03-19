@@ -30,7 +30,7 @@ async function detectLocation(ip: string) {
   if (isPrivate) return null
 
   try {
-    const res = await fetch(`https://ip-api.com/json/${ip}?fields=lat,lon,city,status`, {
+    const res = await fetch(`http://ip-api.com/json/${ip}?fields=lat,lon,city,status`, {
       next: { revalidate: 3600 },
     })
     if (!res.ok) return null
